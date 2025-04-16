@@ -1,0 +1,51 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300..700;1,300..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+:root {
+  --background-color: #1a1a1a;
+  --text-color: #f2f2f2;
+}
+
+body * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+  color: var(--text-color);
+}
+
+body {
+  background-color: var(--background-color);
+}
+
+.clicker-container {
+  position: relative;
+  width: 24rem;
+  height: 24rem;
+}
+
+.clicker-container img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.clicker-container .beams {
+  width: 100%;
+  animation: spin 120s linear infinite;
+}
+
+.clicker-container .clicker-img {
+  width: 60%;
+  cursor: pointer;
+  transition: transform 0.5s ease-out;
+}
+
+@keyframes spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}

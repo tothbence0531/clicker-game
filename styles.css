@@ -3,6 +3,10 @@
 :root {
   --background-color: #1a1a1a;
   --text-color: #f2f2f2;
+  --surface-container-color: #3b690f;
+  --on-surface-container-color: #7eb847;
+  --disabled-bg-color: #3a462e;
+  --disabled-text-color: #637a4d;
 }
 
 body * {
@@ -13,7 +17,10 @@ body * {
   color: var(--text-color);
 }
 
+html,
 body {
+  cursor: url("assets/cursor.png"), auto;
+
   background-color: var(--background-color);
 }
 
@@ -32,13 +39,78 @@ body {
 
 .clicker-container .beams {
   width: 100%;
+  opacity: 0.4;
   animation: spin 120s linear infinite;
 }
 
 .clicker-container .clicker-img {
   width: 60%;
-  cursor: pointer;
   transition: transform 0.5s ease-out;
+}
+
+.wrapper {
+  display: flex;
+}
+
+.upgrade-container {
+  flex: auto;
+  padding-left: 3%;
+  padding-right: 3%;
+  height: 24rem;
+  overflow-y: auto;
+}
+
+.upgrade-container .upgrade {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+  background-color: var(--surface-container-color);
+  border: none;
+  transition: all 0.15s ease-out;
+}
+
+.upgrade-container .upgrade p {
+  color: var(--on-surface-container-color);
+}
+
+.upgrade-container .upgrade span {
+  font-size: 1rem;
+  color: var(--on-surface-container-color);
+  background-color: rgb(28, 68, 28);
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.upgrade-container .upgrade-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+
+.upgrade-container .upgrade:hover {
+  background-color: var(--on-surface-container-color);
+  transition: all 0.15s ease-out;
+}
+
+.upgrade-container .upgrade:hover p {
+  color: var(--surface-container-color);
+}
+
+.upgrade-container .upgrade img {
+  width: 2.5rem;
+}
+
+.upgrade-container .upgrade.disabled,
+.upgrade-container .upgrade.disabled:hover p {
+  background-color: var(--disabled-bg-color) !important;
+  color: var(--disabled-text-color) !important;
+  transition: all 0.15s ease-out !important;
 }
 
 @keyframes spin {

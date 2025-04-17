@@ -8,12 +8,37 @@
   </head>
   <body>
     <p class="coins">Coins: <span id="coins">0</span></p>
-    <button class="upgrade-ore">Upgrade ore</button>
-    <div class="clicker-container">
-      <img class="beams" src="assets/beams.png" alt="clicker" />
-      <img class="clicker-img" src="assets/clickers/stone.webp" alt="clicker" />
-    </div>
+    <p class="cps">CPS: <span id="cps">0</span></p>
+    <p class="cpc">CPC: <span id="cpc">1</span></p>
+    <section class="wrapper">
+      <div class="clicker-container">
+        <img class="beams" src="assets/beams.png" alt="clicker" />
+        <img
+          class="clicker-img"
+          src="assets/clickers/stone.webp"
+          alt="clicker"
+        />
+      </div>
+      <div class="upgrade-container">
+        <div class="upgrade upgrade-ore">
+          <div class="upgrade-title">
+            <img src="assets/clickers/coal.webp" alt="upgrade" />
+            <p>Level up</p>
+          </div>
+          <p id="upgrade-ore-cost">Cost: 1000 coins</p>
+        </div>
+        <div class="upgrade upgrade-pickaxe">
+          <div class="upgrade-title">
+            <img src="assets/upgrades/pickaxe.webp" alt="upgrade" />
+            <p>Pickaxe upgrade <span>Level 1</span></p>
+          </div>
+          <p id="upgrade-pickaxe-cost">Cost: 50 coins</p>
+        </div>
+      </div>
+    </section>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="script.js" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+    <script src="script.js"></script>
   </body>
 </html>

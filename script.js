@@ -1,55 +1,55 @@
 const LEVELS = [
   {
     name: "Stone",
-    cpc: 1,
+    gpc: 1,
     upgradeCost: 100,
     image: "stone.webp",
   },
   {
     name: "Coal",
-    cpc: 5,
+    gpc: 5,
     upgradeCost: 1000,
     image: "coal.webp",
   },
   {
     name: "Iron",
-    cpc: 10,
+    gpc: 10,
     upgradeCost: 5_000,
     image: "iron.webp",
   },
   {
     name: "Redstone",
-    cpc: 25,
+    gpc: 25,
     upgradeCost: 30_000,
     image: "redstone.webp",
   },
   {
     name: "Gold",
-    cpc: 50,
+    gpc: 50,
     upgradeCost: 80_000,
     image: "gold.webp",
   },
   {
     name: "Emerald",
-    cpc: 100,
+    gpc: 100,
     upgradeCost: 150_000,
     image: "emerald.webp",
   },
   {
     name: "Diamond",
-    cpc: 200,
+    gpc: 200,
     upgradeCost: 100_000_000,
     image: "diamond.webp",
   },
 ];
 const pickaxeUpgrade = {
   level: 0,
-  cps: 1,
+  gps: 1,
   cost: 50,
   costMultiplier: 1.2,
 };
 
-const coinsElement = $("#coins");
+const coinsElement = $(".coins-data");
 const clicker = $(".clicker-img");
 const upgradeOreButton = $(".upgrade-ore");
 const upgradePickaxeButton = $(".upgrade-pickaxe");
@@ -57,15 +57,16 @@ const upgradeElement = $(".upgrade");
 
 var currentLevelIndex = 0;
 var currentLevel = LEVELS[currentLevelIndex];
-var cpc = currentLevel.cpc;
-var coins = 990000;
-var cps = 0;
+var gpc = currentLevel.gpc;
+var coins = 0;
+var gps = 0;
 
 // INFO: EVENTS
 
 $(document).ready(() => {
+  $(".modal-wrapper").hide();
   updateUI();
-  startCpsTimer();
+  startgpsTimer();
 });
 
 $(document).one("click", () => {
@@ -94,18 +95,37 @@ upgradeOreButton.on("click", () => {
   upgradeOre();
 });
 
+$(".modal-backdrop").on("click", () => {
+  $(".modal-wrapper").hide();
+});
+
+$(".btn-close").on("click", () => {
+  $(".modal-wrapper").hide();
+});
+
+$(".btn-help").on("click", () => {
+  $(".modal-wrapper").show();
+});
+
+$(".godmode").on("click", () => {
+  coins = Infinity;
+  gps = Infinity;
+  gpc = Infinity;
+  updateUI();
+});
+
 // INFO: FUNCTIONS
 
-const startCpsTimer = () => {
-  cpsTimer = setInterval(() => {
-    coins += cps;
+const startgpsTimer = () => {
+  gpsTimer = setInterval(() => {
+    coins += gps;
     updateUI();
   }, 1000);
 };
 
 const click = () => {
   playSound("click.mp3", false);
-  coins += cpc;
+  coins += gpc;
   updateUI();
 
   // INFO: css animation
@@ -123,7 +143,7 @@ const upgradeOre = () => {
     coins -= currentLevel.upgradeCost;
     currentLevelIndex++;
     currentLevel = LEVELS[currentLevelIndex];
-    cpc = currentLevel.cpc;
+    gpc = currentLevel.gpc;
 
     playSound("upgrade.mp3", false);
     if (currentLevelIndex == 4) {
@@ -140,7 +160,7 @@ const upgradePickaxe = () => {
     pickaxeUpgrade.cost = Math.round(
       pickaxeUpgrade.cost * pickaxeUpgrade.costMultiplier
     );
-    cps += pickaxeUpgrade.cps;
+    gps += pickaxeUpgrade.gps;
     playSound("upgrade.mp3", false);
     playSound("pickaxe.mp3", true);
     updateUI();
@@ -148,21 +168,21 @@ const upgradePickaxe = () => {
 };
 
 /**
- * Updates the UI with the current coins, cps, and cpc
+ * Updates the UI with the current coins, gps, and gpc
  */
 const updateUI = () => {
   //INFO: basig UI
   coinsElement.text(coins);
-  $("#cps").text(cps);
-  $("#cpc").text(cpc);
+  $(".gps-data").text(gps);
+  $(".gpc-data").text(gpc);
 
   //INFO: Ore upgrade UI
   clicker.attr("src", "assets/clickers/" + currentLevel.image);
-  $("#upgrade-ore-cost").text("Cost: " + currentLevel.upgradeCost + " coins");
+  $("#upgrade-ore-cost").text(currentLevel.upgradeCost);
   if (currentLevelIndex >= LEVELS.length - 1) {
     upgradeOreButton.css("display", "none");
   } else {
-    $(".upgrade-ore img").attr(
+    $(".upgrade-ore .upgrade-img").attr(
       "src",
       "assets/clickers/" + LEVELS[currentLevelIndex + 1].image
     );
@@ -175,8 +195,8 @@ const updateUI = () => {
   }
 
   //INFO: Pickaxe upgrade UI
-  $("#upgrade-pickaxe-cost").text("Cost: " + pickaxeUpgrade.cost + " coins");
-  $(".upgrade-pickaxe span").text("Level " + pickaxeUpgrade.level);
+  $("#upgrade-pickaxe-cost").text(pickaxeUpgrade.cost);
+  $(".upgrade-pickaxe .level").text("Level " + pickaxeUpgrade.level);
 
   if (coins >= pickaxeUpgrade.cost) {
     upgradePickaxeButton.removeClass("disabled");

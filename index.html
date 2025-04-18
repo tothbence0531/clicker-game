@@ -5,11 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>A minecraft clicker game</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="shortcut icon" href="assets/gold.webp" type="image/x-icon" />
   </head>
   <body>
-    <p class="coins">Coins: <span id="coins">0</span></p>
-    <p class="cps">CPS: <span id="cps">0</span></p>
-    <p class="cpc">CPC: <span id="cpc">1</span></p>
+    <div class="modal-wrapper">
+      <div class="modal-backdrop"></div>
+      <div class="help-modal">
+        <div class="modal-header">
+          <h2>Help</h2>
+          <button class="btn-close">X</button>
+        </div>
+        <div class="modal-content">
+          <p>
+            <strong>HOW 2 CLICK (AND GET RICH):</strong><br /><br />
+            Welcome to <strong>A Minecraft Clicker Game</strong> — where your
+            mouse is your pickaxe and capitalism is your craft.<br /><br />
+            Click anywhere (preferably the giant block, but hey, live your best
+            life) to earn that juicy gold.<br /><br />
+            Feeling lazy? Press <code>M</code> to mine like a boss — no effort,
+            all gain.<br /><br />
+            Got cash? Spend it irresponsibly! Smash <code>O</code> to upgrade
+            your <em>Level</em> and become an absolute unit.<br /><br />
+            Want a better pickaxe? Hit <code>P</code> and ascend into
+            <em>diamond hands</em> territory.<br /><br />
+            Upgrades? We got more upgrades than your local shady mobile game.
+            Spend gold, buy more stuff, click harder.<br /><br />
+            This game is 50% clicker, 50% memes, and 100% questionable life
+            choices.<br /><br />
+            Go forth, minecrafter — and remember:
+            <strong>fortune favors the clicky</strong>.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="godmode btn-primary">GodMode</button>
+          <p class="credit">Made by: Tóth Bence (D952NT)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-mobile">
+      <img class="title-img" src="assets/title_img.png" alt="title" />
+      <div class="actions">
+        <button class="btn-primary save">Save</button>
+        <button class="btn-primary load">Load</button>
+        <button class="btn-help help">?</button>
+      </div>
+      <div class="stats">
+        <p class="coins">
+          <span class="coins-data">0</span
+          ><img src="assets/gold.webp" alt="gold" />
+        </p>
+        <p class="gps">GPS: <span class="gps-data">0</span></p>
+        <p class="gpc">GPC: <span class="gpc-data">1</span></p>
+      </div>
+    </div>
+    <div class="header">
+      <div class="stats">
+        <p class="coins">
+          <span class="coins-data">0</span
+          ><img src="assets/gold.webp" alt="gold" />
+        </p>
+        <p class="gps">GPS: <span class="gps-data">0</span></p>
+        <p class="gpc">GPC: <span class="gpc-data">1</span></p>
+      </div>
+      <img class="title-img" src="assets/title_img.png" alt="title" />
+      <div class="actions">
+        <button class="btn-primary save">Save</button>
+        <button class="btn-primary load">Load</button>
+        <button class="btn-help help">?</button>
+      </div>
+    </div>
     <section class="wrapper">
       <div class="clicker-container">
         <img class="beams" src="assets/beams.png" alt="clicker" />
@@ -22,17 +87,27 @@
       <div class="upgrade-container">
         <div class="upgrade upgrade-ore">
           <div class="upgrade-title">
-            <img src="assets/clickers/coal.webp" alt="upgrade" />
+            <img
+              class="upgrade-img"
+              src="assets/clickers/coal.webp"
+              alt="upgrade"
+            />
             <p>Level up</p>
           </div>
-          <p id="upgrade-ore-cost">Cost: 1000 coins</p>
+          <p class="cost-container">
+            <span id="upgrade-ore-cost" class="cost-label">1000</span
+            ><img src="assets/gold.webp" alt="coin" />
+          </p>
         </div>
         <div class="upgrade upgrade-pickaxe">
           <div class="upgrade-title">
             <img src="assets/upgrades/pickaxe.webp" alt="upgrade" />
-            <p>Pickaxe upgrade <span>Level 1</span></p>
+            <p>Pickaxe upgrade <span class="level">Level 0</span></p>
           </div>
-          <p id="upgrade-pickaxe-cost">Cost: 50 coins</p>
+          <p class="cost-container">
+            <span id="upgrade-pickaxe-cost" class="cost-label">50</span>
+            <img src="assets/gold.webp" alt="coin" />
+          </p>
         </div>
       </div>
     </section>

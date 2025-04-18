@@ -35,9 +35,9 @@ body * {
 html,
 body {
   padding: 0;
+  position: relative;
   margin: 0;
   cursor: url("assets/cursor.png"), auto;
-
   background-color: var(--background-color);
 }
 
@@ -259,7 +259,8 @@ body {
 }
 
 .upgrade-container .upgrade img {
-  width: 2rem;
+  max-width: 2rem;
+  max-height: 2rem;
 }
 
 .upgrade-container .upgrade.disabled,
@@ -381,4 +382,42 @@ body {
   font-size: 1.2rem;
   font-weight: 600;
   cursor: url("assets/cursor.png"), auto;
+}
+
+.cow {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  display: none;
+}
+
+.cow img {
+  width: 8rem;
+}
+
+.steve {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  display: none;
+}
+
+.steve img {
+  height: 4rem;
+}
+
+.upgrade-steve .upgrade-title img {
+  margin-right: 0.8rem;
+  margin-left: 0.5rem;
+}
+
+.upgrade-creeper .upgrade-title img {
+  margin-right: 0.5rem;
+}
+
+.creeper {
+  position: fixed;
+  top: -650px;
+  left: 0;
+  height: 5rem;
 }

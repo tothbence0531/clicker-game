@@ -1,73 +1,30 @@
 const LEVELS = [
-  {
-    name: "Stone",
-    gpc: 1,
-    upgradeCost: 100,
-    image: "stone.webp",
-  },
-  {
-    name: "Coal",
-    gpc: 5,
-    upgradeCost: 1000,
-    image: "coal.webp",
-  },
-  {
-    name: "Iron",
-    gpc: 10,
-    upgradeCost: 5_000,
-    image: "iron.webp",
-  },
-  {
-    name: "Redstone",
-    gpc: 25,
-    upgradeCost: 30_000,
-    image: "redstone.webp",
-  },
-  {
-    name: "Gold",
-    gpc: 50,
-    upgradeCost: 80_000,
-    image: "gold.webp",
-  },
-  {
-    name: "Emerald",
-    gpc: 100,
-    upgradeCost: 150_000,
-    image: "emerald.webp",
-  },
-  {
-    name: "Diamond",
-    gpc: 200,
-    upgradeCost: 100_000_000,
-    image: "diamond.webp",
-  },
+  { name: "Stone", gpc: 1, upgradeCost: 300, image: "stone.webp" },
+  { name: "Coal", gpc: 4, upgradeCost: 1_200, image: "coal.webp" },
+  { name: "Iron", gpc: 10, upgradeCost: 4_000, image: "iron.webp" },
+  { name: "Redstone", gpc: 20, upgradeCost: 12_000, image: "redstone.webp" },
+  { name: "Gold", gpc: 40, upgradeCost: 35_000, image: "gold.webp" },
+  { name: "Emerald", gpc: 75, upgradeCost: 90_000, image: "emerald.webp" },
+  { name: "Diamond", gpc: 150, upgradeCost: 250_000, image: "diamond.webp" },
 ];
+
 const pickaxeUpgrade = {
   level: 0,
-  gps: 1,
-  cost: 50,
-  costMultiplier: 1.2,
+  gps: 2,
+  cost: 100,
+  costMultiplier: 1.18,
 };
 
 const gpsUpgrades = [
-  {
-    name: "cow",
-    cost: 100,
-    gps: 2,
-    owned: false,
-  },
-  {
-    name: "steve",
-    cost: 150,
-    gps: 3,
-    owned: false,
-  },
-  {
-    name: "creeper",
-    cost: 550,
-    gps: 5,
-    owned: false,
-  },
+  { name: "background", cost: 800, gps: 3 },
+  { name: "cow", cost: 2_000, gps: 7 },
+  { name: "steve", cost: 4_500, gps: 15 },
+  { name: "creeper", cost: 10_000, gps: 30 },
+  { name: "singer", cost: 20_000, gps: 50 },
+  { name: "phantom", cost: 35_000, gps: 75 },
+  { name: "fatguy", cost: 55_000, gps: 110 },
+  { name: "cave", cost: 85_000, gps: 160 },
+  { name: "clock", cost: 130_000, gps: 240 },
 ];
 
 const coinsElement = $(".coins-data");
@@ -79,7 +36,7 @@ const upgradeElement = $(".upgrade");
 var currentLevelIndex = 0;
 var currentLevel = LEVELS[currentLevelIndex];
 var gpc = currentLevel.gpc;
-var coins = 549;
+var coins = 0;
 var gps = 0;
 
 // INFO: EVENTS
@@ -123,12 +80,18 @@ upgradeOreButton.on("click", () => {
   upgradeOre();
 });
 
+$(".upgrade-background").on("click", () => {
+  backgroundUpgrade = getUpgradeByName("background");
+  if (buyGpsUpgrade(backgroundUpgrade)) {
+    playSound("upgrade.mp3", false);
+    $("body").css("background-image", "url(assets/upgrades/background.jpg)");
+    $(".upgrade-background").css("display", "none");
+  }
+});
+
 $(".upgrade-cow").on("click", () => {
-  cowUpgrade = gpsUpgrades.find((upgrade) => upgrade.name === "cow");
-  if (coins >= cowUpgrade.cost) {
-    coins -= cowUpgrade.cost;
-    gps += cowUpgrade.gps;
-    cowUpgrade.owned = true;
+  cowUpgrade = getUpgradeByName("cow");
+  if (buyGpsUpgrade(cowUpgrade)) {
     playSound("upgrade.mp3", false);
     setInterval(() => {
       playSound("cow.mp3", false, 0.2);
@@ -141,11 +104,8 @@ $(".upgrade-cow").on("click", () => {
 });
 
 $(".upgrade-steve").on("click", () => {
-  steveUpgrade = gpsUpgrades.find((upgrade) => upgrade.name === "steve");
-  if (coins >= steveUpgrade.cost) {
-    coins -= steveUpgrade.cost;
-    gps += steveUpgrade.gps;
-    steveUpgrade.owned = true;
+  steveUpgrade = getUpgradeByName("steve");
+  if (buyGpsUpgrade(steveUpgrade)) {
     playSound("upgrade.mp3", false);
     playSound("walking.mp3", true, 0.2);
 
@@ -157,16 +117,81 @@ $(".upgrade-steve").on("click", () => {
 });
 
 $(".upgrade-creeper").on("click", () => {
-  creeperUpgrade = gpsUpgrades.find((upgrade) => upgrade.name === "creeper");
-  if (coins >= creeperUpgrade.cost) {
-    coins -= creeperUpgrade.cost;
-    gps += creeperUpgrade.gps;
-    creeperUpgrade.owned = true;
+  creeperUpgrade = getUpgradeByName("creeper");
+  if (buyGpsUpgrade(creeperUpgrade)) {
     playSound("upgrade.mp3", false);
     startCreeperRain();
 
     $(".creeper").css("display", "block");
     $(".upgrade-creeper").css("display", "none");
+    updateUI();
+  }
+});
+
+$(".upgrade-singer").on("click", () => {
+  singerUpgrade = getUpgradeByName("singer");
+  if (buyGpsUpgrade(singerUpgrade)) {
+    playSound("upgrade.mp3", false);
+    playSound("mine_diamonds.ogg", true, 0.1);
+    $(".upgrade-container").css(
+      "background",
+      "url(assets/upgrades/minediamonds.jpg)"
+    );
+
+    $(".upgrade-singer").css("display", "none");
+    updateUI();
+  }
+});
+
+$(".upgrade-phantom").on("click", () => {
+  phantomUpgrade = getUpgradeByName("phantom");
+  if (buyGpsUpgrade(phantomUpgrade)) {
+    playSound("upgrade.mp3", false);
+    startPhantomSpawn();
+
+    $(".upgrade-phantom").css("display", "none");
+    updateUI();
+  }
+});
+
+$(".upgrade-fatguy").on("click", () => {
+  fatGuyUpgrade = getUpgradeByName("fatguy");
+  if (buyGpsUpgrade(fatGuyUpgrade)) {
+    playSound("upgrade.mp3", false);
+    playSound("lavachicken.ogg", true, 0.5);
+    $(".clicker-container").css(
+      "background",
+      "url(assets/upgrades/lavachicken.gif)"
+    );
+
+    $(".upgrade-fatguy").css("display", "none");
+    updateUI();
+  }
+});
+
+$(".upgrade-cave").on("click", () => {
+  caveUpgrade = getUpgradeByName("cave");
+  if (buyGpsUpgrade(caveUpgrade)) {
+    playSound("upgrade.mp3", false);
+    setInterval(() => {
+      playSound("cave.ogg", false, 0.2);
+    }, Math.floor(Math.random() * 15000) + 10000);
+    $(".upgrade-cave").css("display", "none");
+    updateUI();
+  }
+});
+
+$(".upgrade-clock").on("click", () => {
+  clockUpgrade = getUpgradeByName("clock");
+  if (buyGpsUpgrade(clockUpgrade)) {
+    playSound("upgrade.mp3", false);
+
+    startCreeperRain([20, 20]);
+    startPhantomSpawn([20, 20]);
+    playSound("cow.mp3", true, 1);
+    playSound("cave.ogg", true, 1);
+
+    $(".upgrade-clock").css("display", "none");
     updateUI();
   }
 });
@@ -344,14 +369,68 @@ const spawnCreeper = () => {
   });
 
   $("body").append(creeper);
+  playSound("creeper_start.ogg", false, 0.5);
 
-  creeper.animate({ top: windowHeight + "px" }, 3000, "linear", function () {
-    $(this).remove();
-  });
+  creeper.animate(
+    { top: windowHeight + "px" },
+    Math.random() * 3000 + 2000,
+    "linear",
+    function () {
+      $(this).remove();
+      playSound("creeper_boom.ogg", false, 0.5);
+    }
+  );
 };
 
-const startCreeperRain = (timeout = 1000) => {
+const startCreeperRain = (timeoutInterval = [1000, 1500]) => {
   setInterval(() => {
     spawnCreeper();
-  }, timeout);
+  }, Math.random() * timeoutInterval[0] + timeoutInterval[1]);
+};
+
+const spawnPhantom = () => {
+  const phantom = $("<img>", {
+    src: "assets/upgrades/phantom.png",
+    alt: "phantom",
+    class: "phantom",
+  });
+  const windowWidth = $(window).width();
+  const windowHeight = $(window).height();
+  const randomTop = Math.floor(Math.random() * (windowHeight - 50));
+
+  phantom.css({
+    top: randomTop + "px",
+  });
+
+  $("body").append(phantom);
+  playSound("phantom.ogg", false, 1);
+
+  phantom.animate(
+    { right: windowWidth + "px" },
+    Math.random() * 3000 + 2000,
+    "linear",
+    function () {
+      $(this).remove();
+    }
+  );
+};
+
+const startPhantomSpawn = (timeoutInterval = [1000, 5000]) => {
+  setInterval(() => {
+    spawnPhantom();
+  }, Math.random() * timeoutInterval[0] + timeoutInterval[1]);
+};
+
+/**
+ * Expects a gps upgrade object and returns whether or not the upgrade was successfully bought
+ * @param {object} upgrade
+ */
+const buyGpsUpgrade = (upgrade) => {
+  if (coins >= upgrade.cost) {
+    coins -= upgrade.cost;
+    gps += upgrade.gps;
+    upgrade.owned = true;
+    return true;
+  }
+  return false;
 };

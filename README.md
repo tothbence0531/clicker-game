@@ -25,7 +25,7 @@ This is a browser-based clicker game developed as a university project during th
 
 ## Installation and Setup
 
-0. Its hosted on firebase: `https://a-minecraft-clicker-game.web.app/`
+0. [Its hosted on firebase](https://a-minecraft-clicker-game.web.app/)
 
 1. Clone the repository:
 

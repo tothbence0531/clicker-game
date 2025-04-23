@@ -1,3 +1,16 @@
+/**
+ * This might be my ugliest .js file ever, but it kinda works, dont judge me
+ * All of the games logic is here, constants, variables, functions
+ *
+ * GPC: gold per click
+ * GPS: gold per second
+ * GOLD: currency
+ */
+
+//// VARIABLES ////
+
+// INFO: clicker levels, some upgrades are locked behind a level
+// INFO: these are the only upgrades that give the player GPC
 const LEVELS = [
   { name: "Stone", gpc: 1, upgradeCost: 100, image: "stone.webp" },
   { name: "Coal", gpc: 4, upgradeCost: 400, image: "coal.webp" },
@@ -8,6 +21,7 @@ const LEVELS = [
   { name: "Diamond", gpc: 150, upgradeCost: 40_000, image: "diamond.webp" },
 ];
 
+// INFO: this is the only infinitely scalable upgrade
 let pickaxeUpgrade = {
   level: 0,
   gps: 4,
@@ -15,6 +29,7 @@ let pickaxeUpgrade = {
   costMultiplier: 1.1,
 };
 
+// INFO: these are the upgrades that give the player GPS
 let gpsUpgrades = [
   { name: "background", cost: 300, gps: 5, requiredLevel: 1 },
   { name: "cow", cost: 800, gps: 12, requiredLevel: 2 },
@@ -43,10 +58,11 @@ var audioList = [];
 var intervalList = [];
 var ended = false;
 
-// INFO: EVENTS
+//// EVENTS ////
 
 $(document).ready(() => {
   $(".modal-wrapper").hide();
+  // INFO: checking for save data, only displaying the save found screen if data is found
   if (localStorage.getItem("coins") == null) {
     console.log("Save not found");
     $(".save-found").css("display", "none");
@@ -61,6 +77,7 @@ $(document).ready(() => {
 });
 
 $(window).resize(() => {
+  // INFO: steve would go out of the windows without this when the window is resized
   if (getUpgradeByName("steve").owned) {
     $(".steve").stop(true);
     moveSteveRight();
@@ -174,6 +191,7 @@ $(".upgrade-clock").on("click", () => {
 });
 
 $(".upgrade-exit").on("click", () => {
+  // INFO: clears localstorage, stops all sounds and intervals, displays the ending screen
   if (buyGpsUpgrade(getUpgradeByName("exit"))) {
     ended = true;
     clearLocalStorage();
@@ -182,6 +200,7 @@ $(".upgrade-exit").on("click", () => {
     $(".ending").css("display", "flex");
     let endingProgress = 0;
 
+    // INFO: ending screen progress bar, when fills up, reloads the page
     const interval = setInterval(() => {
       endingProgress += 1;
       $(".ending-progress").text(endingProgress + "%");
@@ -234,10 +253,11 @@ $(".godmode").on("click", () => {
   updateUI();
 });
 
-// INFO: UI FUNCTIONS
+//// UI FUNCTIONS ////
 
 /**
  * Updates the UI with the current coins, gps, and gpc
+ * controls whitch upgrade buttons are disabled
  */
 const updateUI = () => {
   //INFO: basig UI
@@ -296,6 +316,10 @@ const updateUI = () => {
   });
 };
 
+/**
+ * reloads the intervals, sounds with the owned upgrades
+ * used when loading a save
+ */
 const reloadUI = () => {
   stopAllIntervals();
   stopAllSounds();
@@ -315,6 +339,7 @@ const reloadUI = () => {
 
 const updatePickaxeUI = () => {
   if (pickaxeUpgrade.level < 13) {
+    // INFO: too many sounds playing, so limited to 13
     playSound("pickaxe.mp3", true);
   }
 };
@@ -400,29 +425,12 @@ const updateClockUI = () => {
   $(".upgrade-clock").css("display", "none");
 };
 
-// INFO: FUNCTIONS
-
-const startgpsTimer = () => {
-  gpsTimer = intervalList.push(
-    setInterval(() => {
-      //clgVars();
-      coins += gps;
-      updateUI();
-    }, 1000)
-  );
+const exitIntroScreen = () => {
+  $(".intro").css("display", "none");
+  $(".gamearea").css("display", "block");
 };
 
-const click = () => {
-  playSound("click.mp3", false);
-  coins += gpc;
-  updateUI();
-
-  // INFO: css animation
-  clicker.css("transform", "translate(-50%, -50%) scale(.9)");
-  setTimeout(() => {
-    clicker.css("transform", "translate(-50%, -50%) scale(1)");
-  }, 100);
-};
+//// UPGRADE FUNCTIONS ////
 
 const upgradeOre = () => {
   if (
@@ -452,6 +460,163 @@ const upgradePickaxe = () => {
     updatePickaxeUI();
     updateUI();
   }
+};
+
+/**
+ * Returns upgrade object found by name
+ * @param {string} name
+ * @returns
+ */
+const getUpgradeByName = (name) => {
+  return gpsUpgrades.find((upgrade) => upgrade.name === name);
+};
+
+/**
+ * Moves steve to the right, then calls moveSteveLeft() to move him back
+ */
+const moveSteveRight = () => {
+  const windowWidth = $(window).width();
+  const steveWidth = $(".steve").outerWidth();
+  const maxLeft = windowWidth - steveWidth;
+
+  $(".steve img").css("transform", "scaleX(1)");
+
+  $(".steve").animate({ left: maxLeft + "px" }, 25000, "linear", moveSteveLeft);
+};
+
+/**
+ * Moves steve to the left, then calls moveSteveRight() to move him back
+ */
+const moveSteveLeft = () => {
+  $(".steve img").css("transform", "scaleX(-1)");
+  $(".steve").animate({ left: "0px" }, 25000, "linear", moveSteveRight);
+};
+
+/**
+ * spawns a creeper somewhere inside the window on the top, then animates it to the bottom
+ * once it lands on the bottom, it removes itself
+ * audio plays when spawned and when removed
+ */
+const spawnCreeper = () => {
+  const creeper = $("<img>", {
+    src: "assets/upgrades/creeper.png",
+    alt: "creeper",
+    class: "creeper",
+  });
+  const windowWidth = $(window).width();
+  const windowHeight = $(window).height();
+  const randomLeft = Math.floor(Math.random() * (windowWidth - 50));
+
+  creeper.css({
+    left: randomLeft + "px",
+  });
+
+  $("body").append(creeper);
+  playSound("creeper_start.ogg", false, 0.5);
+
+  creeper.animate(
+    { top: windowHeight + "px" },
+    Math.random() * 3000 + 2000,
+    "linear",
+    function () {
+      $(this).remove();
+      playSound("creeper_boom.ogg", false, 0.5);
+    }
+  );
+};
+
+/**
+ * starts interval that spawns creeper, interval can be supplied
+ * @param {Array[number]} timeoutInterval
+ */
+const startCreeperRain = (timeoutInterval = [1000, 1500]) => {
+  intervalList.push(
+    setInterval(() => {
+      spawnCreeper();
+    }, Math.random() * timeoutInterval[0] + timeoutInterval[1])
+  );
+};
+
+/**
+ * spawns a phantom somewhere inside the window on the right, then animates it to the left
+ * once it lands on the left, it removes itself
+ * audio plays when spawned only
+ */
+const spawnPhantom = () => {
+  const phantom = $("<img>", {
+    src: "assets/upgrades/phantom.png",
+    alt: "phantom",
+    class: "phantom",
+  });
+  const windowWidth = $(window).width();
+  const windowHeight = $(window).height();
+  const randomTop = Math.floor(Math.random() * (windowHeight - 50));
+
+  phantom.css({
+    top: randomTop + "px",
+  });
+
+  $("body").append(phantom);
+  playSound("phantom.ogg", false, 1);
+
+  phantom.animate(
+    { right: windowWidth + "px" },
+    Math.random() * 3000 + 2000,
+    "linear",
+    function () {
+      $(this).remove();
+    }
+  );
+};
+
+/**
+ * starts an interval that spawns phantoms, interval can be supplied
+ * @param {Array[number]} timeoutInterval
+ */
+const startPhantomSpawn = (timeoutInterval = [1000, 5000]) => {
+  intervalList.push(
+    setInterval(() => {
+      spawnPhantom();
+    }, Math.random() * timeoutInterval[0] + timeoutInterval[1])
+  );
+};
+
+/**
+ * Expects a gps upgrade object and returns whether or not the upgrade was successfully bought
+ * @param {object} upgrade
+ */
+const buyGpsUpgrade = (upgrade) => {
+  if (coins >= upgrade.cost) {
+    coins -= upgrade.cost;
+    gps += upgrade.gps;
+    upgrade.owned = true;
+    return true;
+  }
+  return false;
+};
+
+//// GENERAL FUNCTIONS ////
+
+const startgpsTimer = () => {
+  gpsTimer = intervalList.push(
+    setInterval(() => {
+      //clgVars();
+      coins += gps;
+      updateUI();
+    }, 1000)
+  );
+};
+
+const click = () => {
+  playSound("click.mp3", false);
+  coins += gpc;
+  updateUI();
+
+  // INFO: css animation
+  clicker.css("transform", "translate(-50%, -50%) scale(.9)");
+  setTimeout(() => {
+    clicker.css("transform", "translate(-50%, -50%) scale(1)");
+  }, 100);
 };
 
 /**
@@ -488,115 +653,6 @@ const stopAllSounds = () => {
 };
 
 /**
- * Returns upgrade object found by name
- * @param {string} name
- * @returns
- */
-const getUpgradeByName = (name) => {
-  return gpsUpgrades.find((upgrade) => upgrade.name === name);
-};
-
-const moveSteveRight = () => {
-  const windowWidth = $(window).width();
-  const steveWidth = $(".steve").outerWidth();
-  const maxLeft = windowWidth - steveWidth;
-
-  $(".steve img").css("transform", "scaleX(1)");
-
-  $(".steve").animate({ left: maxLeft + "px" }, 25000, "linear", moveSteveLeft);
-};
-
-const moveSteveLeft = () => {
-  $(".steve img").css("transform", "scaleX(-1)");
-  $(".steve").animate({ left: "0px" }, 25000, "linear", moveSteveRight);
-};
-
-const spawnCreeper = () => {
-  const creeper = $("<img>", {
-    src: "assets/upgrades/creeper.png",
-    alt: "creeper",
-    class: "creeper",
-  });
-  const windowWidth = $(window).width();
-  const windowHeight = $(window).height();
-  const randomLeft = Math.floor(Math.random() * (windowWidth - 50));
-
-  creeper.css({
-    left: randomLeft + "px",
-  });
-
-  $("body").append(creeper);
-  playSound("creeper_start.ogg", false, 0.5);
-
-  creeper.animate(
-    { top: windowHeight + "px" },
-    Math.random() * 3000 + 2000,
-    "linear",
-    function () {
-      $(this).remove();
-      playSound("creeper_boom.ogg", false, 0.5);
-    }
-  );
-};
-
-const startCreeperRain = (timeoutInterval = [1000, 1500]) => {
-  intervalList.push(
-    setInterval(() => {
-      spawnCreeper();
-    }, Math.random() * timeoutInterval[0] + timeoutInterval[1])
-  );
-};
-
-const spawnPhantom = () => {
-  const phantom = $("<img>", {
-    src: "assets/upgrades/phantom.png",
-    alt: "phantom",
-    class: "phantom",
-  });
-  const windowWidth = $(window).width();
-  const windowHeight = $(window).height();
-  const randomTop = Math.floor(Math.random() * (windowHeight - 50));
-
-  phantom.css({
-    top: randomTop + "px",
-  });
-
-  $("body").append(phantom);
-  playSound("phantom.ogg", false, 1);
-
-  phantom.animate(
-    { right: windowWidth + "px" },
-    Math.random() * 3000 + 2000,
-    "linear",
-    function () {
-      $(this).remove();
-    }
-  );
-};
-
-const startPhantomSpawn = (timeoutInterval = [1000, 5000]) => {
-  intervalList.push(
-    setInterval(() => {
-      spawnPhantom();
-    }, Math.random() * timeoutInterval[0] + timeoutInterval[1])
-  );
-};
-
-/**
- * Expects a gps upgrade object and returns whether or not the upgrade was successfully bought
- * @param {object} upgrade
- */
-const buyGpsUpgrade = (upgrade) => {
-  if (coins >= upgrade.cost) {
-    coins -= upgrade.cost;
-    gps += upgrade.gps;
-    upgrade.owned = true;
-    return true;
-  }
-  return false;
-};
-
-/**
  * Stops all intervals that are in the intervalList array
  */
 const stopAllIntervals = () => {
@@ -605,6 +661,9 @@ const stopAllIntervals = () => {
   });
 };
 
+/**
+ * only handles data saving to the localstorage, no ui logic
+ */
 const saveToLocalStorage = () => {
   localStorage.setItem("save-date", new Date().toLocaleDateString());
   localStorage.setItem("coins", coins);
@@ -616,6 +675,10 @@ const saveToLocalStorage = () => {
   localStorage.setItem("gpsUpgrades", JSON.stringify(gpsUpgrades));
 };
 
+/**
+ * only handles data loading from the localstorage, no ui logic
+ * @returns {boolean} true if data is found, false if not
+ */
 const loadLocalStorageData = () => {
   if (localStorage.getItem("coins") == null) {
     return false;
@@ -636,13 +699,11 @@ const loadLocalStorageData = () => {
   }
 };
 
+/**
+ * clears all data from localstorage
+ */
 const clearLocalStorage = () => {
   localStorage.clear();
-};
-
-const exitIntroScreen = () => {
-  $(".intro").css("display", "none");
-  $(".gamearea").css("display", "block");
 };
 
 /**
